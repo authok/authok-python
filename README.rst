@@ -26,8 +26,7 @@ python3 使用以下命令
 认证 SDK
 ******************
 
-认证 SDK is organized into components that mirror the structure of the
-`API documentation <https://docs.authok.cn/auth-api>`__.
+认证 SDK 对应 `API documentation <https://docs.authok.cn/auth-api>`__ 被组织成不同的模块.
 例如:
 
 .. code-block:: python
