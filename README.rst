@@ -66,7 +66,7 @@ Python 3.2 和 3.3 have reached `EOL <https://en.wikipedia.org/wiki/CPython#Vers
 ID Token 验证
 -------------------
 
-认证成功后, 会接收到 ``id_token``, 如果认证请求包含 ``openid`` scope. ``id_token`` 将包含被认证用户的详细信息. You can read more about ID tokens `here <https://docs.authok.cn/tokens/concepts/id-tokens>`__.
+认证成功后, 会接收到 ``id_token``, 如果认证请求包含 ``openid`` scope. ``id_token`` 将包含被认证用户的详细信息. 你可以通过 此处` <https://docs.authok.cn/tokens/concepts/id-tokens>`__ 了解 更多关于 ID tokens 的信息.
 
 Before you access its contents, you must verify that the ID token has not been tampered with and that it is meant for your application to consume. The ``TokenVerifier`` class can be used to perform this verification.
 

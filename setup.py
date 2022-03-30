@@ -13,10 +13,10 @@ def find_version():
         else:
             raise RuntimeError("Unable to find version string.")
 
-
-with io.open('README.rst', encoding='utf-8') as f:
-    long_description = f.read()
-
+long_description = ''
+# 有中文上传会出错
+# with io.open('README.rst', encoding='utf-8') as f:
+#    long_description = f.read()
 
 setup(
     name='authok-python',
