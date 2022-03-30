@@ -22,8 +22,6 @@ python3 使用以下命令
 
     pip3 install authok-python
 
-Python 3.2 和 3.3 have reached `EOL <https://en.wikipedia.org/wiki/CPython#Version_history>`__ and support will be removed in the near future.
-
 ******************
 认证 SDK
 ******************
