@@ -39,7 +39,7 @@ python3 使用以下命令
     social.login(client_id='...', access_token='...', connection='facebook')
 
 
-如果你通过 邮箱/密码 注册用户, 你可以使用数据库对象.
+邮箱/密码 注册用户, 可使用数据库对象:
 
 .. code-block:: python
 
@@ -50,7 +50,7 @@ python3 使用以下命令
     database.signup(client_id='...', email='user@domain.com', password='secr3t', connection='Username-Password-Authentication')
 
 
-如果你通过 邮箱/密码 注册用户, 你可以使用 ``GetToken`` 对象, 会对应请求 ``/oauth/token`` 端点.
+邮箱/密码 注册用户, 可使用 ``GetToken`` 对象, 会对应去请求 ``/oauth/token`` 端点.
 
 .. code-block:: python
 
