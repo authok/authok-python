@@ -70,20 +70,18 @@ ID Token 验证
 
 在访问其内容之前，必须验证ID令牌未被篡改。``TokenVerifier`` 类用于执行此验证。
 
-To create a ``TokenVerifier``, the following arguments are required:
+创建 ``TokenVerifier`` 实例需要提供以下参数:
+- ``SignatureVerifier`` 实例, 用于验证令牌的算法和签名.
+- 期望的 issuer, 通常是以 ``https://`` 开头，以 ``/`` 结尾的 AuthOK 子域名.
+- 期望的 audience, 匹配 AuthOK 应用的 client ID.
 
-- A ``SignatureVerifier`` instance, which is responsible for verifying the token's algorithm name and signature.
-- The expected issuer value, which typically matches the AuthOK domain prefixed with ``https://`` and suffixed with ``/``.
-- The expected audience value, which typically matches the AuthOK application client ID.
+使用的 ``SignatureVerifier`` 具体类型取决于 AuthOK应用使用的签名算法. 你可以在管理后台具体应用的 ``高级设置 | OAuth | JsonWebToken 签名算法`` 中查看签名算法类型. AuthOK 推荐使用 RS256 非对称签名算法. 在 `这里 <https://docs.authok.cn/tokens/signing-algorithms>`__ 了解更多签名算法相关.
 
-The type of ``SignatureVerifier`` used depends upon the signing algorithm used by your AuthOK application. You can view this value in your application settings under ``Advanced settings | OAuth | JsonWebToken Signature Algorithm``. AuthOK recommends using the RS256 asymmetric signing algorithm. You can read more about signing algorithms `here <https://docs.authok.cn/tokens/signing-algorithms>`__.
+对于类似 RS256 的非对称加密算法, 使用 ``AsymmetricSignatureVerifier`` 类, 传递返回公钥的公开URL作为构造函数参数. 通常是您的 AuthOK 域名 加上 ``/.well-known/jwks.json`` 路径. 例如, ``https://your-domain.cn.authok.cn/.well-known/jwks.json``.
 
-For asymmetric algorithms like RS256, use the ``AsymmetricSignatureVerifier`` class, passing
-the public URL where the certificates for the public keys can be found. This will typically be your AuthOK domain with the ``/.well-known/jwks.json`` path appended to it. For example, ``https://your-domain.cn.authok.cn/.well-known/jwks.json``.
+对于类似 HS256的对称加密算法, 使用 ``SymmetricSignatureVerifier`` 类, 传递 AuthOK 应用的 client secret 作为构造函数参数.
 
-For symmetric algorithms like HS256, use the ``SymmetricSignatureVerifier`` class, passing the value of the client secret of your AuthOK application.
-
-The following example demonstrates the verification of an ID token signed with the RS256 signing algorithm:
+下面的示例演示如何使用RS256签名算法验证 ID Token:
 
 .. code-block:: python
 
@@ -92,38 +90,34 @@ The following example demonstrates the verification of an ID token signed with t
     domain = 'myaccount.cn.authok.cn'
     client_id = 'exampleid'
 
-    # After authenticating
+    # 认证后
     id_token = auth_result['id_token']
 
     jwks_url = 'https://{}/.well-known/jwks.json'.format(domain)
     issuer = 'https://{}/'.format(domain)
 
-    sv = AsymmetricSignatureVerifier(jwks_url)  # Reusable instance
+    sv = AsymmetricSignatureVerifier(jwks_url)  # 可重用实例
     tv = TokenVerifier(signature_verifier=sv, issuer=issuer, audience=client_id)
     tv.verify(id_token)
 
-If the token verification fails, a ``TokenValidationError`` will be raised. In that scenario, the ID token should be deemed invalid and its contents should not be trusted.
+如果令牌验证失败，将抛出 ``TokenValidationError``。在这种情况下，ID令牌应被视为无效，其内容不应被信任。
 
-
-Organizations
+组织
 -------------
 
-`Organizations <https://docs.authok.cn/organizations>`__ is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
+`组织 <https://docs.authok.cn/organizations>`__ 主要用于 SaaS 和 B2B类系统的构建。
 
-Using Organizations, you can:
-* Represent teams, business customers, partner companies, or any logical grouping of users that should have different ways of accessing your applications, as organizations.
-* Manage their membership in a variety of ways, including user invitation.
-* Configure branded, federated login flows for each organization.
-* Implement role-based access control, such that users can have different roles when authenticating in the context of different organizations.
-* Build administration capabilities into your products, using Organizations APIs, so that those businesses can manage their own organizations.
+你可以使用组织:
+* 代表团队、业务客户、合作伙伴公司或任何逻辑用户分组，这些用户可以用不同的方式访问您的应用程序.
+* 通过多种方式管理其成员，包括用户邀请.
+* 为每个组织配置品牌化的联合登录流程.
+* 实现基于角色的访问控制，这样用户在不同组织的上下文中进行身份验证时可以拥有不同的角色.
+* 使用组织API将管理功能构建到您的产品中，以便这些企业能够管理自己的组织.
 
-Note that Organizations is currently only available to customers on our Enterprise and Startup subscription plans.
-
-
-Log in to an organization
+登录到一个组织
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Log in to an organization by specifying the ``organization`` property when calling ``authorize()``:
+在调用 ``authorize()`` 端点时指定 ``organization`` 参数即代表登录到指定组织:
 
 .. code-block:: python
 
@@ -135,7 +129,7 @@ Log in to an organization by specifying the ``organization`` property when calli
                 redirect_uri='http://localhost',
                 organization="org_abc")
 
-When logging into an organization, it is important to ensure the ``org_id`` claim of the ID Token matches the expected organization value. The ``TokenVerifier`` can be be used to ensure the ID Token contains the expected ``org_id`` claim value:
+登录组织时，一定要确保 ID Token 的 ``org_id`` 声明与预期的组织匹配。``TokenVerifier`` 可用于确保 ID Token 包含预期的 ``org_id``:
 
 .. code-block:: python
 
@@ -157,11 +151,11 @@ When logging into an organization, it is important to ensure the ``org_id`` clai
     tv.verify(id_token, organization='org_abc')
 
 
-Accept user invitations
+接收用户邀请
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Accept a user invitation by specifying the ``invitation`` property when calling ``authorize()``. Note that you must also specify the ``organization`` if providing an ``invitation``.
-The ID of the invitation and organization are available as query parameters on the invitation URL, e.g., ``https://your-domain.cn.authok.cn/login?invitation=invitation_id&organization=org_id&organization_name=org_name``
+在调用 ``authorize()`` 端点时通过指定 ``invitation`` 参数来接收用户邀请. 如果指定了 ``invitation``, 必须同时指定 ``organization``.
+邀请ID 和 组织ID 作为邀请链接的查询参数, 例如: ``https://your-domain.cn.authok.cn/login?invitation=invitation_id&organization=org_id&organization_name=org_name``
 
 .. code-block:: python
 
@@ -174,8 +168,7 @@ The ID of the invitation and organization are available as query parameters on t
             organization='org_abc',
             invitation="invitation_123")
 
-
-Authorizing users from an Organization
+授权来自组织的用户
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If an ``org_id`` claim is present in the Access Token, then the claim should be validated by the API to ensure that the value received is expected or known.
