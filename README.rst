@@ -377,9 +377,9 @@ API调用可能会由于多种原因而失败:
 问题报告
 ***************
 
-If you have found a bug or if you have a feature request, please report them at this repository issues section.
-Please do not report security vulnerabilities on the public GitHub issue tracker.
-The `Responsible Disclosure Program <https://authok.cn/whitehat>`__ details the procedure for disclosing security issues.
+若发现BUG, 请提交 issue.
+不要在 Github 公开 issue 中公布安全漏洞.
+您可以把安全问题提交到 `这里 <https://authok.cn/whitehat>`__, 我们会给予奖励.
 
 **************
 什么是 AuthOK?
@@ -387,14 +387,14 @@ The `Responsible Disclosure Program <https://authok.cn/whitehat>`__ details the 
 
 AuthOK 可以帮助您:
 
-* Add authentication with `multiple authentication sources <https://docs.authok.cn/identityproviders>`__,
-  either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, among others**,
-  or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
-* Add authentication through more traditional `username/password databases <https://docs.authok.cn/connections/database/mysql>`__.
-* Add support for `linking different user accounts <https://docs.authok.cn/link-accounts>`__ with the same user.
-* Support for generating signed `JSON Web Tokens <https://docs.authok.cn/jwt>`__ to call your APIs and **flow the user identity** securely.
-* Analytics of how, when and where users are logging in.
-* Pull data from other sources and add it to the user profile, through `JavaScript rules <https://docs.authok.cn/rules>`__.
+* 通过 `多种身份提供者 <https://docs.authok.cn/identityproviders>`__ 进行认证,
+  比如主流的社会化身份提供者 **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, 等**,
+  企业身份系统如 **Windows Azure AD, Google Apps, Active Directory, ADFS 或任何的 SAML 身份提供者**.
+* 通过多种数据库进行 `用户名/密码 认证.
+* 支持 `账户关联 <https://docs.authok.cn/link-accounts>`__.
+* 可生成 `JSON Web Tokens <https://docs.authok.cn/jwt>`__ 来调用 APIs.
+* 分析用户登录的方式、时间地点等.
+* 从其它来源提取数据，并通过 ``JavaScript 规则 <https://docs.authok.cn/rules>``__ 将其添加到用户档案中.
 
 ***************************
 创建免费的 AuthOK 账号
