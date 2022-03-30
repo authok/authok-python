@@ -68,7 +68,7 @@ ID Token 验证
 
 认证成功后, 会接收到 ``id_token``, 如果认证请求包含 ``openid`` scope. ``id_token`` 将包含被认证用户的详细信息. 你可以通过 `此处 <https://docs.authok.cn/tokens/concepts/id-tokens>`__ 了解 更多关于 ID tokens 的信息.
 
-Before you access its contents, you must verify that the ID token has not been tampered with and that it is meant for your application to consume. The ``TokenVerifier`` class can be used to perform this verification.
+在访问其内容之前，必须验证ID令牌未被篡改。``TokenVerifier`` 类用于执行此验证。
 
 To create a ``TokenVerifier``, the following arguments are required:
 
