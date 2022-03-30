@@ -371,7 +371,7 @@ API调用可能会由于多种原因而失败:
 变更日志
 **********
 
-Please see `CHANGELOG.md <https://github.com/authok/authok-python/blob/master/CHANGELOG.md>`__.
+请查看 `CHANGELOG.md <https://github.com/authok/authok-python/blob/master/CHANGELOG.md>`__.
 
 ***************
 问题报告
