@@ -168,18 +168,20 @@ ID Token 验证
 授权来自组织的用户
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If an ``org_id`` claim is present in the Access Token, then the claim should be validated by the API to ensure that the value received is expected or known.
+如果访问令牌中存在 ``org_id`` 声明，则API应验证该声明，以确保收到的值是预期的.
 
-In particular:
+- 必须检查 (``iss``) 声明以确保令牌由 AuthOK 颁发.
+- 必须检查 (``org_id``) 声明以确保组织是预期的.
 
-- The issuer (``iss``) claim should be checked to ensure the token was issued by AuthOK
-- The organization ID (``org_id``) claim should be checked to ensure it is a value that is already known to the application. This could be validated against a known list of organization IDs, or perhaps checked in conjunction with the current request URL. e.g. the sub-domain may hint at what organization should be used to validate the Access Token.
+通常，验证颁发者就足以确保令牌是由AuthOK颁发的。对于组织，应进行额外的检查以确保组织是合法的.
 
-Normally, validating the issuer would be enough to ensure that the token was issued by AuthOK. In the case of organizations, additional checks should be made so that the organization within an AuthOK tenant is expected.
+如果声明无法验证，应用程序应认为令牌无效.
 
-If the claim cannot be validated, then the application should deem the token invalid.
-
-The snippet below attempts to illustrate how this verification could look like using the external `PyJWT <https://pyjwt.readthedocs.io/en/latest/usage.html#encoding-decoding-tokens-with-rs256-rsa>`__ library. This dependency will take care of pulling the RS256 Public Key that was used by the server to sign the Access Token. It will also validate its signature, expiration, and the audience value. After the basic verification, get the ``org_id`` claim and check it against the expected value. The code assumes your application is configured to sign tokens using the RS256 algorithm. Check the `Validate JSON Web Tokens <https://docs.authok.cn/tokens/json-web-tokens/validate-json-web-tokens>`__ article to learn more about this verification.
+下面的代码使用 `PyJWT <https://pyjwt.readthedocs.io/en/latest/usage.html#encoding-decoding-tokens-with-rs256-rsa>`__ 库进行 Token 校验. 
+This dependency will take care of pulling the RS256 Public Key that was used by the server to sign the Access Token.
+PyJWT 将负责从服务器获取RS256公钥, 并验证签名，超时，还有 audience. 
+经过基本验证后, 进一步校验 ``org_id`` 声明是否符合预期. 
+代码假定应用使用RS256算法对令牌进行签名. 更多信息可参考 `验证 JSON Web Tokens <https://docs.authok.cn/tokens/json-web-tokens/validate-json-web-tokens>`__.
 
 .. code-block:: python
 
@@ -208,7 +210,8 @@ The snippet below attempts to illustrate how this verification could look like u
 管理 SDK
 **************
 
-To use the management library you will need to instantiate an AuthOK object with a domain and a `Management API v1 token <https://docs.authok.cn/api/management/v1/tokens>`__. Please note that these token last 24 hours, so if you need it constantly you should ask for it programmatically using the client credentials grant with a `non interactive client <https://docs.authok.cn/api/management/v1/tokens#1-create-and-authorize-a-client>`__ authorized to access the API. For example:
+您需要用 域名 和 `管理 API v1 令牌 <https://docs.authok.cn/api/management/v1/tokens>`__ 来实例化AuthOK对象. 
+请注意，令牌有效期只有24小时，因此如果您需要长时间调用管理API，应该使用 `非交互式客户端 <https://docs.authok.cn/api/management/v1/tokens#1-create-and-authorize-a-client>`__ 的客户端凭据授权以编程方式请求它. 例如:
 
 .. code-block:: python
 
@@ -224,7 +227,7 @@ To use the management library you will need to instantiate an AuthOK object with
     mgmt_api_token = token['access_token']
 
 
-Then use the token you've obtained as follows:
+使用获取到的令牌:
 
 .. code-block:: python
 
@@ -235,15 +238,15 @@ Then use the token you've obtained as follows:
 
     authok = AuthOK(domain, mgmt_api_token)
 
-The ``AuthOK()`` object is now ready to take orders!
-Let's see how we can use this to get all available connections.
-(this action requires the token to have the following scope: ``read:connections``)
+``AuthOK()`` 对象现在可以开始执行API调用了!
+下面使用它来获取所有可用的身份源.
+(此调用需要的 scope: ``read:connections``)
 
 .. code-block:: python
 
     authok.connections.all()
 
-Which will yield a list of connections similar to this:
+调用成功将返回身份源列表:
 
 .. code-block:: python
 
@@ -251,9 +254,9 @@ Which will yield a list of connections similar to this:
         {
             'enabled_clients': [u'rOsnWgtw23nje2QCDuDJNVpxlsCylSLE'],
             'id': u'con_ErZf9LpXQDE0cNBr',
-            'name': u'Amazon-Connection',
+            'name': u'Wechat-PC-Connection',
             'options': {u'profile': True, u'scope': [u'profile']},
-            'strategy': u'amazon'
+            'strategy': u'wechat:pc'
         },
         {
             'enabled_clients': [u'rOsnWgtw23nje2QCDuDJNVpxlsCylSLE'],
@@ -264,22 +267,19 @@ Which will yield a list of connections similar to this:
         }
     ]
 
-Modifying an existing connection is equally as easy. Let's change the name
-of connection ``'con_ErZf9LpXQDE0cNBr'``.
-(The token will need scope: ``update:connections`` to make this one work)
+修改一个现有的身份源信息. (此调用 需要令牌中包含以下 scope: ``update:connections``)
 
 .. code-block:: python
 
     authok.connections.update('con_ErZf9LpXQDE0cNBr', {'name': 'MyNewName'})
 
-That's it! Using the ``get`` method of the connections endpoint we can verify
-that the rename actually happened.
+可以调用 ``get`` 方法来查看修改是否成功.
 
 .. code-block:: python
 
     modified_connection = authok.connections.get('con_ErZf9LpXQDE0cNBr')
 
-Which returns something like this
+返回如下
 
 .. code-block:: python
 
@@ -288,13 +288,12 @@ Which returns something like this
         'id': u'con_ErZf9LpXQDE0cNBr',
         'name': u'MyNewName',
         'options': {u'profile': True, u'scope': [u'profile']},
-        'strategy': u'amazon'
+        'strategy': u'wechat:pc'
     }
 
 成功!
 
-All endpoints follow a similar structure to ``connections``, and try to follow as
-closely as possible the `API documentation <https://docs.authok.cn/api/v1>`__.
+所有其它端点的调用都类似于 ``connections``, 更多可详细参考 `API 文档 <https://docs.authok.cn/api/v1>`__.
 
 ==============
 错误处理
