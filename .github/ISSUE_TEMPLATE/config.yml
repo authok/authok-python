@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: AuthOK Community
+    url: https://community.cn.authok.cn/c/sdks/5
+    about: Discuss this SDK in the AuthOK Community forums
+  - name: Library Documentation
+    url: https://github.com/authok/authok-python/blob/master/README.rst
+    about: Read the library docs
