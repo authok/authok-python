@@ -299,11 +299,10 @@ PyJWT 将负责从服务器获取RS256公钥, 并验证签名，超时，还有 
 错误处理
 ==============
 
-When consuming methods from the API clients, the requests could fail for a number of reasons:
-- Invalid data sent as part of the request: An ``AuthOKError` is raised with the error code and description.
-- Global or Client Rate Limit reached: A ``RateLimitError`` is raised and the time at which the limit
-resets is exposed in the ``reset_at`` property. When the header is unset, this value will be ``-1``.
-- Network timeouts: Adjustable by passing a ``timeout`` argument to the client. See the `rate limit docs <https://docs.authok.cn/policies/rate-limits>`__ for details.
+API调用可能会由于多种原因而失败:
+- 请求数据无效：抛出了一个带有错误代码和详情的``AuthOKError``.
+- 已达到全局或客户端速率限制：会抛出 ``RateLimitError``，并在 ``reset_at`` 属性中包含限制重置的时间.
+- 网络超时: 客户端可传递 ``timeout`` 参数进行调整. 详情可参考 `频率限制 <https://docs.authok.cn/policies/rate-limits>`__.
 
 
 ==============
